@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="89px" height="24px" viewBox="0 0 89 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Pages" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Home" transform="translate(-676.000000, -602.000000)" fill="#FFFFFF">
+            <g id="Hero">
+                <g id="Scroll-arrow" transform="translate(674.000000, 602.000000)">
+                    <path d="M2,24 C15.0172007,24 22.6281788,2.59348099e-13 46.452391,-3.19744231e-14 C70.2766032,-3.12638804e-13 72.9719321,24 91,24 C104.990989,24 -12.5769542,24 2,24 Z M42.034,12.376 L40.5,13.91 L47,20.41 L53.5,13.91 L51.966,12.376 L47,17.368 L42.034,12.376 Z" id="Combined-Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
