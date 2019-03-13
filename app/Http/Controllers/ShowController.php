@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Episode;
 use App\Show;
 use Curl;
+use DB;
 use Illuminate\Http\Request;
 
 class ShowController extends Controller
@@ -141,10 +142,16 @@ class ShowController extends Controller
 
     public function fetch(Request $request, $id)
     {
+        $ids = DB::table('episodes')->select('tvmaze_id')
+            ->selectRaw('count(`tvmaze_id`) as `occurences`')
+            ->groupBy('tvmaze_id')
+            ->having('occurences', '>', 1)
+            ->get()->pluck('tvmaze_id');
         $show = Show::find($id);
         if (!$show) {
             return abort(404);
         }
+
         $url = "http://api.tvmaze.com/shows/{$show->tvmaze_id}?embed=episodes";
         $ch = new Curl();
         $data = json_decode($ch->get($url));
@@ -163,6 +170,7 @@ class ShowController extends Controller
             $show->p_episode = $pre;
             $show->n_episode = $nxt;
             $show->save();
+            Episode::whereIn('tvmaze_id', $ids)->where('show_id', $show->id)->delete();
             $ep = 0;
             foreach ($data->_embedded->episodes as $key => $value) {
                 $ep += 1;
