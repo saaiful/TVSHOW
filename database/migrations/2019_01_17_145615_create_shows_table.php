@@ -16,7 +16,7 @@ class CreateShowsTable extends Migration
         Schema::create('shows', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('tvmaze_id');
-            $table->string('imdb', 20)->nullable();
+            $table->string('imdb_id', 20)->nullable();
             $table->string('genres', 255)->nullable();
             $table->string('name', 255);
             $table->string('search', 255)->nullable();
