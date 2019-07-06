@@ -21,7 +21,7 @@ class CreateEpisodesTable extends Migration
             $table->integer('episode');
             $table->string('name', 255);
             $table->text('summary')->nullable();
-            $table->date('schedule');
+            $table->dateTime('schedule')->nullable();
             $table->text('magnet');
             $table->timestamps();
         });

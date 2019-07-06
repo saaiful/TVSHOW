@@ -63,7 +63,9 @@
 							@if($item->magnet)
 							<a href="{{ $item->magnet }}"><span class="certificate">M</span></a>
 							@endif
+							@if(env('DOWNLOAD'))
 							<a href="{{ url('download?id='.$item->id.'&download=yes&force=yes') }}"><span class="certificate">D</span></a>
+							@endif
 						</td>
 					</tr>
 					<tr>
@@ -100,15 +102,20 @@
 						<td class="text-center">{{ $ep->schedule }}</td>
 						<td class="text-center">{{ sprintf("S%02dE%02d", $ep->season,$ep->episode) }}</td>
 						<td class="text-center">
-							@if($ep->magnet)
-							<a href="{{ url('download?id='.$ep->id.'&download=yes&force=yes') }}">Re Download</a> |
-							@else
-							<a href="{{ url('download?id='.$ep->id.'&download=yes') }}">Download</a> |
-							<a href="{{ url('download?id='.$ep->id.'&download=yes') }}">Aria2 Download</a> |
-							@endif
-							@if($ep->magnet)
-							<a href="{{ $ep->magnet }}">Margnet</a>
-							@endif
+							<?php 
+								$links = [];
+								if($ep->magnet){
+									$links[] = '<a href="'.url('download?id='.$ep->id.'&download=yes&force=yes').'">Re Download</a>';
+									$links[] = '<a href="'.$ep->magnet.'">Margnet</a>';
+								}
+								if(!$ep->magnet){
+									$links[] = '<a href="'.url('download?id='.$ep->id.'&download=yes').'">Download</a>';
+								}
+								if(env('DOWNLOAD') && $ep->magnet){
+									$links[] = '<a href="'.url('download?id='.$ep->id.'&download=yes').'">Aria2 Download</a>';
+								}
+							?>
+							{!! implode("&nbsp;|&nbsp", $links) !!}
 						</td>
 					</tr>
 					@if($ep->summary)

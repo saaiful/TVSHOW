@@ -16,7 +16,7 @@ class PageController extends Controller
     public function home(Request $request)
     {
         $day_of_week = date('N');
-        $given_date = strtotime(date('Y-m-d', strtotime('-1 day')));
+        $given_date = strtotime(date('Y-m-d', strtotime('-0 hour')));
         $first_of_week = date('Y-m-d', strtotime("- {$day_of_week} day", $given_date));
         $first_of_week = strtotime($first_of_week);
         for ($i = 0; $i < 7; $i++) {
@@ -36,6 +36,7 @@ class PageController extends Controller
      */
     public function downloading(Request $request)
     {
+        if (!env('DOWNLOAD')) {return abort(404);}
         return view('downloading');
     }
 
@@ -46,7 +47,7 @@ class PageController extends Controller
      */
     public function whatsNew(Request $request)
     {
-        $date = date('Y-m-d', strtotime('-1 day'));
+        $date = date('Y-m-d', strtotime('-0 hour'));
         $items = Episode::with('show')->whereDate('schedule', $date)->get();
         return view('whats-new')->with('items', $items);
     }

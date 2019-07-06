@@ -185,7 +185,7 @@ class ShowController extends Controller
                 $x->episode = $value->number;
                 $x->summary = $value->summary;
                 $x->name = $value->name;
-                $x->schedule = $value->airdate;
+                $x->schedule = $value->airdate . " " . $show->schedule;
                 $x->save();
             }
             $show->episode = $ep;

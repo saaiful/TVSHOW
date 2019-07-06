@@ -55,9 +55,11 @@
 									<li><a href="{{ url('show/update-all') }}">Update All</a></li>
 								</ul>
 							</li>
+							@if(env('DOWNLOAD'))
 							<li>
 								<a href="{{ url('/downloading') }}">Downloading</a>
 							</li>
+							@endif
 						</ul>
 					</div>
 				</div>

@@ -116,16 +116,19 @@ class TorrentController extends Controller
      */
     public function startDownload($uri)
     {
-        $aria2 = new Aria2();
-        try {
-            $aria2->addUri([$uri], [
-                'dir' => env('DIR'),
-                '--seed-time' => env('SEED'),
-            ]);
-            return true;
-        } catch (Exception $e) {
-            return false;
+        if (env('DOWNLOAD')) {
+            $aria2 = new Aria2();
+            try {
+                $aria2->addUri([$uri], [
+                    'dir' => env('DIR'),
+                    '--seed-time' => env('SEED'),
+                ]);
+                return true;
+            } catch (Exception $e) {
+                return false;
+            }
         }
+        return false;
     }
 
     /**
@@ -134,6 +137,7 @@ class TorrentController extends Controller
      */
     public function aria2status()
     {
+        if (!env('DOWNLOAD')) {return abort(404);}
         $aria2 = new Aria2();
         $paused = $aria2->tellWaiting(0, 1000);
         $paused = @$paused['result'];
@@ -155,6 +159,7 @@ class TorrentController extends Controller
      */
     public function aria2remove()
     {
+        if (!env('DOWNLOAD')) {return abort(404);}
         $aria2 = new Aria2();
         $aria2->remove(@$_GET['id']);
         return redirect('/downloading');
@@ -166,6 +171,7 @@ class TorrentController extends Controller
      */
     public function aria2pause()
     {
+        if (!env('DOWNLOAD')) {return abort(404);}
         $aria2 = new Aria2();
         $aria2->pause(@$_GET['id']);
         return redirect('/downloading');
@@ -177,6 +183,7 @@ class TorrentController extends Controller
      */
     public function aria2resume()
     {
+        if (!env('DOWNLOAD')) {return abort(404);}
         $aria2 = new Aria2();
         $aria2->unpause(@$_GET['id']);
         return redirect('/downloading');
@@ -189,11 +196,13 @@ class TorrentController extends Controller
      */
     public function download(Request $request)
     {
+
         $output = ['result' => false];
         $item = Episode::find($request->id);
         if ($item) {
-            $search = sprintf("%s S%02dE%02d", ($item->show->search) ? $item->show->search : $item->show->name, $item->season, $item->episode);
-            $sae = sprintf("S%02dE%02d", $item->season, $item->episode);
+            $__s = ($item->show->search) ? $item->show->search : $item->show->name;
+            $search = sprintf("%s S%02dE%02d", $__s, $item->season, $item->episode);
+            $sae = sprintf("%s.*S%02dE%02d", $__s, $item->season, $item->episode);
             if (empty($item->magnet) || $request->force == 'yes') {
                 $result = $this->tpb($search, $sae);
                 if (!$result) {
