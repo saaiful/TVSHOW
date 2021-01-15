@@ -78,12 +78,12 @@
 	</div>
 </div>
 
-
+<?php $all = []; ?>
 <div class="container section single-movie">
 	<div class="row">
 		<div class="col-sm-12">
 			@foreach($seasons as $key => $season)
-			<h2>Season {{ sprintf("%02d", $season->season) }}</h2>
+			<h2>Season {{ sprintf("%02d", $season->season) }} - <a href="javascript:{};"  onclick="downloadAll({{ $season->season }});">Download All</a></h2>
 			<table class="table table-bordered table-inverse">
 				<thead>
 					<tr>
@@ -95,7 +95,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach(App\Episode::where('show_id', $show->id)->where('season',$season->season)->orderBy('id','dsec')->get() as $ep)
+					@foreach(App\Episode::where('show_id', $show->id)->where('season',$season->season)->orderBy('id','dsec')->get() as $xxx=> $ep)
+					<?php $all[$season->season][$ep->episode]= url('download?id='.$ep->id.'&download=yes&force=yes'); ?>
 					<tr class="{{ ($ep->schedule<=date('Y-m-d'))?'success':'' }}">
 						<td>{{ $ep->id }}</td>
 						<td>{{ $ep->name }}</td>
@@ -134,4 +135,21 @@
 
 
 @push('script')
+<script type="text/javascript">
+	var data = {!! json_encode($all) !!};
+	function downloadAll(session){
+		$.each(data[session], function(i,v){
+			console.log(v);
+			$.ajax({
+				method: "GET",
+				url: v,
+				success: function(data){
+			
+				},error: function(data){
+			
+				}
+			});
+		});
+	}
+</script>
 @endpush

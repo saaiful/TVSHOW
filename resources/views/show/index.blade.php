@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('hero')
 <div id="content_hero" style="background-image: url(images/hero-shortcodes.jpg)">
-	<img src="{{ url('images/scroll-arrow.svg') }}" alt="Scroll down" class="scroll">
+	{{-- <img src="{{ url('images/scroll-arrow.svg') }}" alt="Scroll down" class="scroll"> --}}
 	<div class="container">
 		<div class="row blurb scrollme animateme" data-when="exit" data-from="0" data-to="1" data-opacity="0" data-translatey="100">
 			<div class="col-md-9">

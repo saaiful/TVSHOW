@@ -11,7 +11,7 @@ class TorrentController extends Controller
 {
     public $errors = [];
 
-    public $ts = 'ettv|eztv|hdtv|rartv';
+    public $ts = 'ettv|eztv|hdtv|rartv|TGx';
 
     /**
      * The Pirate Bay Driver
@@ -21,27 +21,33 @@ class TorrentController extends Controller
      */
     public function tpb($search, $match)
     {
-        return false;
+        // return false;
         $ch = new Curl();
-        $url = 'https://unblockpirate.uk/search.php?q=' . urlencode($search);
-        $html = $ch->get($url, 'https://unblockpirate.uk');
+        $url = 'https://piratebay.party/search/' . rawurlencode($search) . '/1/99/0';
+        $html = $ch->get($url, 'https://piratebay.party/search/');
+        // return $url;
         if (!$html) {
             $this->errors[] = 'TPB Down';
             return false;
         }
         $html = str_get_html($html);
+
         $x = [];
+        $regx = "/^" . $match . ".*({$this->ts})/i";
         foreach ($html->find("tbody tr") as $key => $value) {
-            $_x = @$value->find('.detName a', 0)->innertext;
-            $_z = @$value->find('td', 1)->innertext;
-            $_y = @$value->find('td', 2)->innertext;
-            if ($_x) {
-                preg_match("/href=\"(magnet.*)\" title=\"Download/", $_z, $_z);
-                if (preg_match("/" . $match . ".*({$this->ts})/i", $_x)) {
-                    $x[] = ['seed' => $_y, 'name' => $_x, 'url' => @$_z[1]];
+            $a = @$value->find('td', 1)->innertext;
+            if ($a) {
+                $name = @$value->find('td', 1)->find('a', 0)->innertext;
+                $seed = @$value->find('td', 5)->innertext;
+                $mgnt = @$value->find('td', 3)->find('a', 0)->href;
+                // var_dump($name);
+                // var_dump($regx);
+                if (preg_match($regx, $name)) {
+                    $x[] = ['seed' => $seed, 'name' => $name, 'url' => $mgnt];
                 }
             }
         }
+        // dd($x);
         return (isset($x[0])) ? $x[0] : false;
     }
 
@@ -54,9 +60,10 @@ class TorrentController extends Controller
     public function l33t($search, $match)
     {
         $ch = new Curl();
-        $html = $ch->get('https://1337x.unblocked.ltda/search/' . urlencode($search) . "/1/");
-        // return 'https://1337x.unblocked.ltda/search/' . urlencode($search) . "/1";
+        $html = $ch->get('https://www.1377x.to/search/' . urlencode($search) . "/1/");
+        // return 'https://1337x.unblockit.id/search/' . urlencode($search) . "/1";
         $html = str_get_html($html);
+
         if (!$html) {
             $this->errors[] = '1337x Down';
             return false;
@@ -64,15 +71,18 @@ class TorrentController extends Controller
         $x = [];
         foreach ($html->find(".table-list tr") as $key => $value) {
             $_x = @$value->find('a')[1]->innertext;
+            var_dump($_x);
+            var_dump($match . ".*({$this->ts})");
             if ($_x && preg_match("/" . $match . ".*({$this->ts})/i", $_x)) {
                 $_y = @$value->find('a')[1]->href;
                 $_z = (int) @$value->find('.seeds')[1]->innertext;
                 $x[] = ['seed' => $_z, 'name' => $_x, 'url' => $_y];
             }
         }
+        dd($x);
         // return $x;
         if (isset($x[0])) {
-            $link = "https://1337x.unblocked.ltda" . $x[0]['url'];
+            $link = "https://1337x.unblockit.id" . $x[0]['url'];
             // return $link;
             $result = $ch->get($link);
             $html = str_get_html($result);
@@ -96,7 +106,7 @@ class TorrentController extends Controller
     public function kat($search, $match)
     {
         $ch = new Curl();
-        $html = $ch->get('https://kickass.sx/torrent/usearch/' . urlencode($search));
+        $html = $ch->get('https://kickass.cd/torrent/usearch/' . urlencode($search));
         $html = str_get_html($html);
         if (!$html) {
             $this->errors[] = 'KAT Down';
@@ -105,7 +115,7 @@ class TorrentController extends Controller
         $x = [];
         foreach ($html->find('tbody tr') as $key => $value) {
             $_x = trim(@$value->find('.cellMainLink')[0]->plaintext);
-            $_y = "https://kickass.sx" . @$value->find('.cellMainLink')[0]->href;
+            $_y = "https://kickass.cd" . @$value->find('.cellMainLink')[0]->href;
             $_z = @$value->find('td')[4]->innertext;
             if (!preg_match("/Y/", $_z) && preg_match("/" . $match . ".*({$this->ts})/i", $_x)) {
                 $x[] = ['seed' => (int) $_z, 'name' => $_x, 'url' => $_y];
@@ -209,10 +219,14 @@ class TorrentController extends Controller
 
         $output = ['result' => false];
         $item = Episode::find($request->id);
+
         if ($item) {
             $__s = ($item->show->search) ? $item->show->search : $item->show->name;
             $search = sprintf("%s S%02dE%02d", $__s, $item->season, $item->episode);
+
+            // dd($search);
             $sae = sprintf("%s.*S%02dE%02d", $__s, $item->season, $item->episode);
+            $sae = str_replace(" ", '[\s\.]+', $sae);
             if (empty($item->magnet) || $request->force == 'yes') {
                 $result = $this->tpb($search, $sae);
 
@@ -256,6 +270,7 @@ class TorrentController extends Controller
                 if ($output['result'] == false) {
                     return redirect()->back()->with('error', 'Can\'t Find The Show!');
                 }
+
                 return redirect()->back()->with('success', 'Downloading ' . $search . " Now!");
                 return response()->json($output, 200);
             }
