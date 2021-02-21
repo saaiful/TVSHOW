@@ -43,6 +43,7 @@
 							<li>
 								<a href="{{ url('/') }}">Home</a>
 							</li>
+                            <li><a href="{{ url('show') }}">All Shows</a></li>
 							<li>
 								<a href="{{ url('/whats-new') }}">What's New</a>
 							</li>
@@ -57,7 +58,7 @@
 							</li>
 							@if(env('DOWNLOAD'))
 							<li>
-								<a href="{{ url('/downloading') }}">Downloading</a>
+								<a href="{{ url('/downloading') }}" title="Downloading"><i class="fa fa-download"></i></a>
 							</li>
 							@endif
 						</ul>

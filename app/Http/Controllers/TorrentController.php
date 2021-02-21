@@ -71,15 +71,15 @@ class TorrentController extends Controller
         $x = [];
         foreach ($html->find(".table-list tr") as $key => $value) {
             $_x = @$value->find('a')[1]->innertext;
-            var_dump($_x);
-            var_dump($match . ".*({$this->ts})");
+            // var_dump($_x);
+            // var_dump($match . ".*({$this->ts})");
             if ($_x && preg_match("/" . $match . ".*({$this->ts})/i", $_x)) {
                 $_y = @$value->find('a')[1]->href;
                 $_z = (int) @$value->find('.seeds')[1]->innertext;
                 $x[] = ['seed' => $_z, 'name' => $_x, 'url' => $_y];
             }
         }
-        dd($x);
+        // dd($x);
         // return $x;
         if (isset($x[0])) {
             $link = "https://1337x.unblockit.id" . $x[0]['url'];
@@ -141,8 +141,10 @@ class TorrentController extends Controller
             try {
                 $aria2->addUri([$uri], [
                     'dir' => env('DIR'),
-                    '--seed-time' => env('SEED'),
+                    'seed-time' => env('SEED'),
+                    'x' => 2,
                 ]);
+                // 2
                 return true;
             } catch (Exception $e) {
                 return false;
@@ -222,6 +224,7 @@ class TorrentController extends Controller
 
         if ($item) {
             $__s = ($item->show->search) ? $item->show->search : $item->show->name;
+            $__s = str_replace([":"], [' '], $__s);
             $search = sprintf("%s S%02dE%02d", $__s, $item->season, $item->episode);
 
             // dd($search);
