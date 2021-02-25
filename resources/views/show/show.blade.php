@@ -95,7 +95,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach(App\Episode::where('show_id', $show->id)->where('season',$season->season)->orderBy('id','dsec')->get() as $xxx=> $ep)
+					@foreach(App\Episode::where('show_id', $show->id)->where('season',$season->season)->orderBy('id','desc')->get() as $xxx=> $ep)
 					<?php $all[$season->season][$ep->episode]= url('download?id='.$ep->id.'&download=yes&force=yes'); ?>
 					<tr class="{{ ($ep->schedule<=date('Y-m-d'))?'success':'' }}">
 						<td>{{ $ep->id }}</td>

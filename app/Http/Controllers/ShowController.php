@@ -100,13 +100,13 @@ class ShowController extends Controller
         $last = Episode::where('show_id', $show->id)
             ->whereDate('schedule', '<=', date('Y-m-d', strtotime('-8 hour')))
             ->whereDate('schedule', '!=', '0000-00-00')
-            ->orderBy('id', 'dsec')
+            ->orderBy('id', 'desc')
             ->take(5)
             ->get();
 
         $seasons = Episode::where('show_id', $show->id)
             ->groupBy('season')
-            ->orderBy('season', 'dsec')
+            ->orderBy('season', 'desc')
             ->get();
 
         return view('show.show')
