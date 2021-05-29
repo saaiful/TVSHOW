@@ -22,8 +22,8 @@ class TorrentController extends Controller
     public function tpb($search, $match)
     {
         // return false;
-        $ch = new Curl();
-        $url = 'https://piratebay.party/search/' . rawurlencode($search) . '/1/99/0';
+        $ch   = new Curl();
+        $url  = 'https://piratebay.party/search/' . rawurlencode($search) . '/1/99/0';
         $html = $ch->get($url, 'https://piratebay.party/search/');
         // return $url;
         if (!$html) {
@@ -32,7 +32,7 @@ class TorrentController extends Controller
         }
         $html = str_get_html($html);
 
-        $x = [];
+        $x    = [];
         $regx = "/^" . $match . ".*({$this->ts})/i";
         foreach ($html->find("tbody tr") as $key => $value) {
             $a = @$value->find('td', 1)->innertext;
@@ -59,8 +59,8 @@ class TorrentController extends Controller
      */
     public function l33t($search, $match)
     {
-        $ch = new Curl();
-        $html = $ch->get('https://www.1377x.to/search/' . urlencode($search) . "/1/");
+        $ch   = new Curl();
+        $html = $ch->get('https://1337x.to/search/' . urlencode($search) . "/1/");
         // return 'https://1337x.unblockit.id/search/' . urlencode($search) . "/1";
         $html = str_get_html($html);
 
@@ -71,26 +71,21 @@ class TorrentController extends Controller
         $x = [];
         foreach ($html->find(".table-list tr") as $key => $value) {
             $_x = @$value->find('a')[1]->innertext;
-            // var_dump($_x);
-            // var_dump($match . ".*({$this->ts})");
             if ($_x && preg_match("/" . $match . ".*({$this->ts})/i", $_x)) {
-                $_y = @$value->find('a')[1]->href;
-                $_z = (int) @$value->find('.seeds')[1]->innertext;
+                $_y  = @$value->find('a')[1]->href;
+                $_z  = (int) @$value->find('.seeds')[1]->innertext;
                 $x[] = ['seed' => $_z, 'name' => $_x, 'url' => $_y];
             }
         }
-        // dd($x);
-        // return $x;
         if (isset($x[0])) {
-            $link = "https://1337x.unblockit.id" . $x[0]['url'];
+            $link = "https://1337x.to" . $x[0]['url'];
             // return $link;
             $result = $ch->get($link);
-            $html = str_get_html($result);
+            $html   = str_get_html($result);
             if (!$html) {
                 return response()->json("Try Again!", 500);
             }
-            // $magnet = @$html->find('.download-links-dontblock a')[0]->href;
-            $magnet = @$html->find('.page-content ul li a')[0]->href;
+            $magnet      = @$html->find('.page-content ul li a')[0]->href;
             $x[0]['url'] = $magnet;
             return $x[0];
         }
@@ -105,7 +100,7 @@ class TorrentController extends Controller
      */
     public function kat($search, $match)
     {
-        $ch = new Curl();
+        $ch   = new Curl();
         $html = $ch->get('https://kickass.cd/torrent/usearch/' . urlencode($search));
         $html = str_get_html($html);
         if (!$html) {
@@ -122,8 +117,8 @@ class TorrentController extends Controller
             }
         }
         if (isset($x[0])) {
-            $html = $ch->get($x[0]['url']);
-            $html = str_get_html($html);
+            $html        = $ch->get($x[0]['url']);
+            $html        = str_get_html($html);
             $x[0]['url'] = @$html->find('.kaGiantButton')[0]->href;
         }
         return (isset($x[0])) ? $x[0] : false;
@@ -140,9 +135,9 @@ class TorrentController extends Controller
             $aria2 = new Aria2();
             try {
                 $aria2->addUri([$uri], [
-                    'dir' => env('DIR'),
+                    'dir'       => env('DIR'),
                     'seed-time' => env('SEED'),
-                    'x' => 2,
+                    'x'         => 2,
                 ]);
                 // 2
                 return true;
@@ -160,11 +155,11 @@ class TorrentController extends Controller
     public function aria2status()
     {
         if (!env('DOWNLOAD')) {return abort(404);}
-        $aria2 = new Aria2();
-        $paused = $aria2->tellWaiting(0, 1000);
-        $paused = @$paused['result'];
-        $r = $aria2->tellActive();
-        $running = @$r['result'];
+        $aria2       = new Aria2();
+        $paused      = $aria2->tellWaiting(0, 1000);
+        $paused      = @$paused['result'];
+        $r           = $aria2->tellActive();
+        $running     = @$r['result'];
         $r['result'] = [];
         foreach ($running as $key => $value) {
             $r['result'][] = $value;
@@ -220,11 +215,11 @@ class TorrentController extends Controller
     {
 
         $output = ['result' => false];
-        $item = Episode::find($request->id);
+        $item   = Episode::find($request->id);
 
         if ($item) {
-            $__s = ($item->show->search) ? $item->show->search : $item->show->name;
-            $__s = str_replace([":"], [' '], $__s);
+            $__s    = ($item->show->search) ? $item->show->search : $item->show->name;
+            $__s    = str_replace([":"], [' '], $__s);
             $search = sprintf("%s S%02dE%02d", $__s, $item->season, $item->episode);
 
             // dd($search);
@@ -242,7 +237,7 @@ class TorrentController extends Controller
                 }
                 if ($result) {
                     $output['result'] = $result;
-                    $item->magnet = $result['url'];
+                    $item->magnet     = $result['url'];
                     $item->save();
                     if ($request->download == 'yes') {
                         if ($this->startDownload($item->magnet)) {
@@ -259,8 +254,8 @@ class TorrentController extends Controller
                 return redirect()->back()->with('success', 'Downloading ' . $search . " Now!");
                 return response()->json($output, 201);
             } else {
-                $output['errors'] = false;
-                $output['result']['url'] = $item->magnet;
+                $output['errors']         = false;
+                $output['result']['url']  = $item->magnet;
                 $output['result']['seed'] = -1;
                 $output['result']['name'] = 'No Idea';
                 if ($request->download == 'yes') {
