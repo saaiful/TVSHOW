@@ -27,15 +27,16 @@ Route::get('show/{id}/fetch', 'ShowController@fetch');
 Route::resource('show', 'ShowController');
 
 // Route::get('/test', 'TorrentController@search');
-Route::get('/test', function () {
-    $shows = App\Show::all();
-    foreach ($shows as $key => $show) {
-        $url = "http://api.tvmaze.com/shows/{$show->tvmaze_id}?embed=episodes";
-        $ch = new Curl();
-        $data = json_decode($ch->get($url));
-        $show->imdb_id = $data->externals->imdb;
-        $show->genres = $data->genres;
-        $show->save();
-    }
-    return '**ok**';
+/*Route::get('/test', function () {
+$shows = App\Show::all();
+foreach ($shows as $key => $show) {
+$url = "http://api.tvmaze.com/shows/{$show->tvmaze_id}?embed=episodes";
+$ch = new Curl();
+$data = json_decode($ch->get($url));
+$show->imdb_id = $data->externals->imdb;
+$show->genres = $data->genres;
+$show->save();
+}
+return '**ok**';
 });
+ */

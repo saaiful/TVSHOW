@@ -18,7 +18,7 @@ This is a simple web application for "Automatic TV Show Download". It's written 
 3. Edit the .env file and set your database details.
 4. Migrate using `php artisan migrate`.
 5. Install aria2 in your server/pc and enable rpc (`aria2c --enable-rpc --rpc-listen-all`), in windows x64 download the setup file from https://github.com/saaiful/aria2-win64-rpc/raw/master/aria2c-setup.exe and just install it and reboot your pc.
-6. Set a cron job or set a task using windows task scheduler. 
+6. Set a cron job or set a task using windows task scheduler or https://www.z-cron.com/. run the `download.cmd`. 
 
 
 All downloads can be found in `storage/downloads`.
