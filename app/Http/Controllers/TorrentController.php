@@ -11,7 +11,7 @@ class TorrentController extends Controller
 {
     public $errors = [];
 
-    public $ts = 'ettv|eztv|hdtv|rartv|TGx';
+    public $ts = 'ettv|eztv|hdtv|rartv|TGx|WEB|H\.246';
 
     /**
      * The Pirate Bay Driver
@@ -31,23 +31,22 @@ class TorrentController extends Controller
             return false;
         }
         $html = str_get_html($html);
-
         $x    = [];
         $regx = "/^" . $match . ".*({$this->ts})/i";
         foreach ($html->find("tbody tr") as $key => $value) {
-            $a = @$value->find('td', 1)->innertext;
+            $a = @$value->find('th, td', 1)->innertext;
             if ($a) {
-                $name = @$value->find('td', 1)->find('a', 0)->innertext;
-                $seed = @$value->find('td', 5)->innertext;
-                $mgnt = @$value->find('td', 3)->find('a', 0)->href;
+                $name = @$value->find('th, td', 1)->find('a', 0)->innertext;
+                $seed = @$value->find('th, td', 5)->innertext;
+                $mgnt = @$value->find('th, td', 3)->find('a', 0)->href;
                 // var_dump($name);
                 // var_dump($regx);
+                // var_dump($mgnt);
                 if (preg_match($regx, $name)) {
                     $x[] = ['seed' => $seed, 'name' => $name, 'url' => $mgnt];
                 }
             }
         }
-        // dd($x);
         return (isset($x[0])) ? $x[0] : false;
     }
 
@@ -222,7 +221,6 @@ class TorrentController extends Controller
             $__s    = str_replace([":"], [' '], $__s);
             $search = sprintf("%s S%02dE%02d", $__s, $item->season, $item->episode);
 
-            // dd($search);
             $sae = sprintf("%s.*S%02dE%02d", $__s, $item->season, $item->episode);
             $sae = str_replace(" ", '[\s\.]+', $sae);
             if (empty($item->magnet) || $request->force == 'yes') {
