@@ -128,17 +128,18 @@ class TorrentController extends Controller
      * @param  [type] $uri [description]
      * @return bool
      */
-    public function startDownload($uri)
+    public function startDownload($uri, $show)
     {
+        // dd(base_path('basic.cmd'));
         if (env('DOWNLOAD')) {
             $aria2 = new Aria2();
             try {
                 $aria2->addUri([$uri], [
-                    'dir'       => env('DIR'),
+                    'dir'       => str_replace("//", "/", env('DIR') . '/' . $show),
                     'seed-time' => env('SEED'),
                     'x'         => 2,
                 ]);
-                // 2
+                Episode::where('id', $show)->update(['status' => 1]);
                 return true;
             } catch (Exception $e) {
                 return false;
@@ -238,7 +239,7 @@ class TorrentController extends Controller
                     $item->magnet     = $result['url'];
                     $item->save();
                     if ($request->download == 'yes') {
-                        if ($this->startDownload($item->magnet)) {
+                        if ($this->startDownload($item->magnet, $item->id)) {
                             $output['download'] = true;
                         } else {
                             $output['download'] = true;
@@ -257,7 +258,7 @@ class TorrentController extends Controller
                 $output['result']['seed'] = -1;
                 $output['result']['name'] = 'No Idea';
                 if ($request->download == 'yes') {
-                    if ($this->startDownload($item->magnet)) {
+                    if ($this->startDownload($item->magnet, $item->id)) {
                         $output['download'] = true;
                     } else {
                         $output['download'] = true;

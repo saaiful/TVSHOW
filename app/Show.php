@@ -14,7 +14,7 @@ class Show extends Model
      *
      * @var array
      */
-    protected $fillable = ['tvmaze_id', 'imdb_id', 'genres', 'name', 'search', 'match', 'summary', 'schedule', 'cover', 'season', 'episode', 'p_episode', 'n_episode', 'last_update'];
+    protected $fillable = ['tvmaze_id', 'imdb_id', 'genres', 'name', 'search', 'match', 'summary', 'schedule', 'cover', 'season', 'episode', 'p_episode', 'n_episode', 'last_update', 'thetvdb', 'premiered'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -63,6 +63,8 @@ class Show extends Model
             $show->summary   = $data->summary;
             $show->schedule  = $data->schedule->time;
             $show->cover     = $data->image->original;
+            $show->premiered = $data->premiered;
+            $show->thetvdb   = $data->externals->thetvdb;
             $show->p_episode = $pre;
             $show->n_episode = $nxt;
             $show->save();
