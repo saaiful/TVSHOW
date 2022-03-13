@@ -15,7 +15,7 @@ class UpdateShowsTable extends Migration
     {
         Schema::table('shows', function (Blueprint $table) {
             $table->date('premiered')->nullable();
-            $table->tinyInteger('thetvdb')->unsigned();
+            $table->integer('thetvdb')->unsigned();
         });
 
         Schema::table('episodes', function (Blueprint $table) {
