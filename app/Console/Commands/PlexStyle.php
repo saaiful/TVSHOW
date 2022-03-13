@@ -78,7 +78,7 @@ class PlexStyle extends Command
      */
     public function filename_sanitizer($unsafeFilename)
     {
-        $dangerousCharacters = ['"', "'", "&", "/", "\\", "?", "#", ":", '\/'];
+        $dangerousCharacters = ['<', '>', ':', '"', '/', '\\', '|', '?', '*'];
         $safe_filename       = str_replace($dangerousCharacters, '', $unsafeFilename);
         return $safe_filename;
     }
@@ -109,12 +109,13 @@ class PlexStyle extends Command
             $dir   = $main_dir   = str_replace(["//"], DIRECTORY_SEPARATOR, env('DIR') . DIRECTORY_SEPARATOR . $item->id);
             $shows = $this->getTree($dir);
             if (count($shows) > 0) {
-                if ($shows[0][2] > 100) {
+                if ($shows[0][2] > 20) {
                     $year                = ($item->show->premiered) ? date(' (Y)', strtotime($item->show->premiered)) : '';
-                    $show_with_year      = $item->show->name . $year;
+                    $show_with_year      = $this->filename_sanitizer($item->show->name . $year);
                     $show_with_year_tpdb = $show_with_year . ' {tvdb-' . $item->show->thetvdb . '}';
-                    $new_dir             = env('FINAL_DIR') . DIRECTORY_SEPARATOR . $show_with_year_tpdb . DIRECTORY_SEPARATOR . 'Season ' . sprintf("%02d", $item->season);
-                    $new_name            = $new_dir . DIRECTORY_SEPARATOR . $this->filename_sanitizer($show_with_year . ' - ' . sprintf("s%02de%02d", $item->season, $item->episode) . ' - ' . $item->name . '.' . $shows[0][1]);
+                    $new_dir             = str_replace("/", DIRECTORY_SEPARATOR, env('FINAL_DIR') . DIRECTORY_SEPARATOR . $show_with_year_tpdb . DIRECTORY_SEPARATOR . 'Season ' . sprintf("%02d", $item->season));
+                    $new_name            = $new_dir . DIRECTORY_SEPARATOR . $show_with_year . ' - ' . sprintf("s%02de%02d", $item->season, $item->episode) . ' - ' . $item->name . '.' . $shows[0][1];
+                    // var_dump($new_dir);
                     $this->make_dir($new_dir);
                     @rename($shows[0][0], $new_name);
                     $this->delTree($main_dir);
