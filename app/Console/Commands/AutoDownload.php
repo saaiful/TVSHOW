@@ -38,13 +38,14 @@ class AutoDownload extends Command
      */
     public function handle()
     {
-        $date = date('Y-m-d', strtotime('-8 hour'));
-        $items = Episode::with('show')->whereDate('schedule', $date)->whereNull('magnet')->get();
+        $date  = date('Y-m-d', strtotime('-8 hour'));
+        $items = Episode::with('show')->whereDate('schedule', $date)->where('magnet', '=', '')->get();
         if (!$items) {
             echo '**all done**';
             return true;
         }
         foreach ($items as $key => $item) {
+            echo $item->id . "\n";
             file_get_contents(url('download?id=' . $item->id . '&download=yes&force=yes'));
         }
         echo '**ok**';
